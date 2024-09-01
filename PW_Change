@@ -1,0 +1,36 @@
+#!/bin/bash
+USERNAME=$1
+
+#Ensure the script is run as root
+if [[ $EUID -ne 0 ]]; then
+	echo "This script can only be run as root."
+	exit 1
+fi
+
+#Ensure that username is passed as an argument
+if [ -z "$1" ]; then
+	echo "Usage: $0 <username>"
+	exit 1
+fi
+
+#Generates a 12 character random password that can include captial letters, lowercase letters, numbers, and special characters.
+NEW_PASSWORD=$(tr -dc 'A-Za-z0-9!@#$%^&*()_+{}|:<>?=' < /dev/urandom | head -c 12)
+
+#Change the user's password to the newly generated one
+echo "$USERNAME:$NEW_PASSWORD" | chpasswd
+
+#Display the new password
+echo "New password for '$USERNAME' has been changed to $NEW_PASSWORD"
+
+#Uncomment the options below to change where password is pushed
+
+#Save the new password to a file
+#echo "$USERNAME:$NEW_PASSWORD" >> /home/dave/Documents/alutiiq_pw_file.txt
+#echo "New password for '$USERNAME' has been change and saved to /home/dave/Documents/alutiiq_pw_file.txt"
+
+#Ensures the file is secure
+#chmod 600 /home/dave/Documents/alutiiq_pw_file.txt
+
+#Emails the password to the user
+#echo "Your password has been changed. New Password: $NEW_PASSWORD" | mail -s "Password Change Notification from Alutiiq" $USERNAME@alutiiq.com
+#echo "The password for '$USERNAME' has been changed and emailed to $USERNAME@alutiiq.com"
